@@ -19,6 +19,8 @@ func main() {
 	cmds := commands{}
 	cmds.register("login", handlerLogin)
 	cmds.register("register", handlerRegister)
+	cmds.register("reset", handlerReset)
+	cmds.register("users", handlerListUsers)
 	st := state{
 		config: cfg,
 		dbQueries: dbQueries,
@@ -34,5 +36,4 @@ func main() {
 	if err != nil {
 		log.Fatalf("Couldn't execute command: %v", err)
 	}
-
 }

@@ -52,3 +52,26 @@ func handlerRegister(s *state, cmd *command) error {
 	fmt.Printf("Switched to %s\n", userRecord.Name)
 	return nil
 }
+
+func handlerListUsers(s *state, cmd *command) error {
+	userRecords, err := s.dbQueries.GetUsers(context.Background())
+	if err!=nil {
+		return err
+	}
+	for _, userRecord := range userRecords {
+		fmt.Print("* ", userRecord.Name)
+		if userRecord.Name == s.config.CurrentUserName {
+			fmt.Print(" (current)")
+		}
+		fmt.Println()
+	}
+	return nil
+}
+func handlerReset(s *state, cmd *command) error {
+	err := s.dbQueries.DeleteAllUsers(context.Background())
+	if err != nil {
+		return err
+	}
+	fmt.Println("DANGER: Dropped all users")
+	return nil
+}
