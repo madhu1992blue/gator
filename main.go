@@ -1,31 +1,38 @@
 package main
 
 import (
-	"fmt"
+	"database/sql"
+	_ "github.com/lib/pq"
+	"os"
 	"log"
-	"encoding/json"
 	"github.com/madhu1992blue/gator/internal/config"
+	"github.com/madhu1992blue/gator/internal/database"
 )
 func main() {
 	cfg, err := config.Read()
 	if err != nil {
 		log.Fatalf("Couldn't read config: %v", err)
 	}
+	db, err := sql.Open("postgres", cfg.DBUrl)
+	dbQueries := database.New(db)
 	
-	err = cfg.SetUser("madhusudan")
-	if err != nil {
-		log.Fatalf("Couldn't set user: %v", err)
+	cmds := commands{}
+	cmds.register("login", handlerLogin)
+	cmds.register("register", handlerRegister)
+	st := state{
+		config: cfg,
+		dbQueries: dbQueries,
 	}
-	updatedCfg, err := config.Read()
-	if err != nil {
-		log.Fatalf("Couldn't read updated config: %v", err)
+	if len(os.Args) < 2 {
+		log.Fatalf("Subcommand not specified")
 	}
-	
-	dataBytes, err := json.Marshal(updatedCfg)
-	
-	if err != nil {
-		log.Fatalf("Couldn't convert Config to json: %v", err)
+	cmd := command {
+		name: os.Args[1],
+		args: os.Args[2:],
 	}
-	fmt.Println(string(dataBytes))
+	err = cmds.run(&st, &cmd)
+	if err != nil {
+		log.Fatalf("Couldn't execute command: %v", err)
+	}
 
 }
