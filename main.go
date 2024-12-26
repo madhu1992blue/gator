@@ -32,6 +32,7 @@ func main() {
 	cmds.register("follow", middlewareLoggedIn(handlerFollowFeed))
 	cmds.register("following", middlewareLoggedIn(handlerGetFeedFollowsForUser))
 	cmds.register("unfollow", middlewareLoggedIn(handlerUnfollowFeed))
+	cmds.register("browse", middlewareLoggedIn(handlerBrowse))
 	st := state{
 		config:    cfg,
 		dbQueries: dbQueries,
