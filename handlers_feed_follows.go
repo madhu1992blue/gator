@@ -11,6 +11,21 @@ import (
 	"github.com/madhu1992blue/gator/internal/database"
 )
 
+func handlerUnfollowFeed(s *state, c *command, userRecord database.User) error {
+	if len(c.args) < 1 {
+		return errors.New("unfollow: expects URL to unfollow")
+	}
+	feedUrl := c.args[0]
+	err := s.dbQueries.UnfollowFeed(context.Background(), database.UnfollowFeedParams{
+		FeedUrl:  feedUrl,
+		Username: userRecord.Name,
+	})
+	fmt.Printf("%s unfollowed %s\n", userRecord.Name, feedUrl)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 func handlerGetFeedFollowsForUser(s *state, _ *command, userRecord database.User) error {
 	feedFollowsForUserRows, err := s.dbQueries.GetFeedFollowsForUser(context.Background(), s.config.CurrentUserName)
 	if err != nil {
@@ -18,7 +33,7 @@ func handlerGetFeedFollowsForUser(s *state, _ *command, userRecord database.User
 	}
 	fmt.Println("Username\t\tFeedname")
 	for _, row := range feedFollowsForUserRows {
-		fmt.Printf("%s\t\t%s", row.UserName, row.FeedName)
+		fmt.Printf("%s\t\t%s\n", row.UserName, row.FeedName)
 	}
 	return nil
 }
