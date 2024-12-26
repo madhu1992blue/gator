@@ -65,6 +65,16 @@ func handlerAddFeed(s *state, c *command) error {
 	if err != nil {
 		return err
 	}
+	_, err = s.dbQueries.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Username:  s.config.CurrentUserName,
+		FeedUrl:   feedRecord.Url,
+	})
+	if err != nil {
+		return err
+	}
 	feedBytes, err := xml.Marshal(FeedDTO{
 		ID:        feedRecord.ID,
 		CreatedAt: feedRecord.CreatedAt,

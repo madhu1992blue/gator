@@ -29,6 +29,8 @@ func main() {
 	cmds.register("agg", handlerAgg)
 	cmds.register("addfeed", handlerAddFeed)
 	cmds.register("feeds", handlerListFeeds)
+	cmds.register("follow", handlerFollowFeed)
+	cmds.register("following", handlerGetFeedFollowsForUser)
 	st := state{
 		config:    cfg,
 		dbQueries: dbQueries,
