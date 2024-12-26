@@ -2,26 +2,27 @@ package main
 
 import (
 	"context"
-	"encoding/xml"
 	"errors"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/madhu1992blue/gator/internal/database"
-	"github.com/madhu1992blue/gator/internal/feedsApi"
 )
 
-func handlerAgg(_ *state, _ *command) error {
-	rssFeed, err := feedsApi.FetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
+func handlerAgg(s *state, c *command) error {
+	if len(c.args) < 1 {
+		return errors.New("agg: expects an argument of duration like 1s, 1m, 1h")
+	}
+	timeDurationInput := c.args[0]
+	time_between_reqs, err := time.ParseDuration(timeDurationInput)
 	if err != nil {
 		return err
 	}
-	dataBytes, err := xml.Marshal(rssFeed)
-	if err != nil {
-		return err
+	ticker := time.NewTicker(time_between_reqs)
+	for ; ; <-ticker.C {
+		scrapeFeeds(s)
 	}
-	fmt.Println(string(dataBytes))
 	return nil
 
 }
