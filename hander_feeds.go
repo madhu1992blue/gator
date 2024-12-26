@@ -46,13 +46,9 @@ func handlerListFeeds(s *state, _ *command) error {
 	return nil
 }
 
-func handlerAddFeed(s *state, c *command) error {
+func handlerAddFeed(s *state, c *command, userRecord database.User) error {
 	if len(c.args) < 2 {
 		return errors.New("addfeed: needs 2 arguments, name and url")
-	}
-	userRecord, err := s.dbQueries.GetUser(context.Background(), s.config.CurrentUserName)
-	if err != nil {
-		return err
 	}
 	feedRecord, err := s.dbQueries.CreateFeed(context.Background(), database.CreateFeedParams{
 		ID:        uuid.New(),

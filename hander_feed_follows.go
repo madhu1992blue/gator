@@ -11,7 +11,7 @@ import (
 	"github.com/madhu1992blue/gator/internal/database"
 )
 
-func handlerGetFeedFollowsForUser(s *state, _ *command) error {
+func handlerGetFeedFollowsForUser(s *state, _ *command, userRecord database.User) error {
 	feedFollowsForUserRows, err := s.dbQueries.GetFeedFollowsForUser(context.Background(), s.config.CurrentUserName)
 	if err != nil {
 		return err
@@ -23,7 +23,7 @@ func handlerGetFeedFollowsForUser(s *state, _ *command) error {
 	return nil
 }
 
-func handlerFollowFeed(s *state, c *command) error {
+func handlerFollowFeed(s *state, c *command, user database.User) error {
 	if len(c.args) < 1 {
 		return errors.New("follow: expects a URL to follow")
 	}
