@@ -12,48 +12,6 @@ import (
 	"github.com/madhu1992blue/gator/internal/feedsApi"
 )
 
-type FeedDTO struct {
-	ID        uuid.UUID `xml:"ID"`
-	CreatedAt time.Time `xml:"created_at"`
-	UpdatedAt time.Time `xml:"updated_at"`
-	Name      string    `xml:"name"`
-	Url       string    `xml:"url"`
-	UserID    uuid.UUID `xml:"user_id"`
-}
-
-func handlerAddFeed(s *state, c *command) error {
-	if len(c.args) < 2 {
-		return errors.New("addfeed: needs 2 arguments, name and url")
-	}
-	userRecord, err := s.dbQueries.GetUser(context.Background(), s.config.CurrentUserName)
-	if err != nil {
-		return err
-	}
-	feedRecord, err := s.dbQueries.CreateFeed(context.Background(), database.CreateFeedParams{
-		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		Name:      c.args[0],
-		Url:       c.args[1],
-		UserID:    userRecord.ID,
-	})
-	if err != nil {
-		return err
-	}
-	feedBytes, err := xml.Marshal(FeedDTO{
-		ID:        feedRecord.ID,
-		CreatedAt: feedRecord.CreatedAt,
-		UpdatedAt: feedRecord.UpdatedAt,
-		Name:      feedRecord.Name,
-		Url:       feedRecord.Name,
-		UserID:    feedRecord.UserID,
-	})
-	if err != nil {
-		return err
-	}
-	fmt.Println(feedBytes)
-	return nil
-}
 func handlerAgg(_ *state, _ *command) error {
 	rssFeed, err := feedsApi.FetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
 	if err != nil {
